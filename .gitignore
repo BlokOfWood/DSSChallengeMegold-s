@@ -136,3 +136,5 @@ _NCrunch*
 *.ide-shm
 *ide-wal
 *.cache
+*obj/*
+*.vs/*
