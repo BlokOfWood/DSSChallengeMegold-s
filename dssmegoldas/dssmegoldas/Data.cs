@@ -24,8 +24,8 @@ namespace dssmegoldas
             if (!int.TryParse(csvRowSplit[2], out quantity))
                 return;
 
-            if (!DateTime.TryParse(csvRowSplit[3], out dueTime))
-                return;
+            string[] tmp = csvRowSplit[3].Split('.');
+            dueTime = new DateTime(2020, int.Parse(tmp[0]), int.Parse(tmp[1]), int.Parse(tmp[2].Split(':')[0]), int.Parse(tmp[2].Split(':')[1]), 00);
 
             if (!int.TryParse(csvRowSplit[4], out profit))
                 return;
