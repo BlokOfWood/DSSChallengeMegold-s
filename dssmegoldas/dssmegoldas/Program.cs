@@ -10,6 +10,7 @@ namespace dssmegoldas
     {
         static void Main(string[] args)
         {
+            CSVHelper.csvifyFile();
         }
     }
 }
