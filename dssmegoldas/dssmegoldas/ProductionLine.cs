@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace dssmegoldas
 {
-    class CompletionData
+    public class CompletionData
     {
         public Data OrderData;
         public TimeSpan[] TimeToCompleteSteps = new TimeSpan[6];
@@ -24,7 +24,7 @@ namespace dssmegoldas
         }
     }
 
-    class ProductionLine
+    public class ProductionLine
     {
         public CompletionData[] OrderCompletionData;
         public DateTime CurrentTime;
@@ -108,10 +108,10 @@ namespace dssmegoldas
                 IdleOrders[doneOrderStep.Item3].Enqueue(doneOrderStep.Item2);
                 OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 = -1;
             }
-            if(OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 == -1)
-            {
-                
-            }
+            //if(OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 == -1)
+            //{
+            //    
+            //}
             //Console.WriteLine($"{doneOrderStep.Item1} - {doneOrderStep.Item2} - {doneOrderStep.Item3} - {doneOrderStep.Item4}");
 
 
