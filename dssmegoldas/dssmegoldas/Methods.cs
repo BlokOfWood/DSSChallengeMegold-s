@@ -13,43 +13,57 @@ namespace dssmegoldas
             return unsortedData.OrderBy(x => x.priority).ToArray();
         }
 
-        public static bool CheckIfBetterSwapped(this Data[] datas, int idx1, int idx2)
+        public static ProductionLine CheckIfBetterSwapped(int idx1, int idx2, int[] prodLineCap, ProductionLine oriProdLine)
         {
-            Data[] tmp = datas;
-            tmp[idx1] = datas[idx2];
-            tmp[idx2] = datas[idx1];
+            Data[] oriData = Program.data;
 
-            if(tmp.TotalLoss() < datas.TotalLoss())
+            Data[] tmp = Program.data;
+            tmp[idx1] = Program.data[idx2];
+            tmp[idx2] = Program.data[idx1];
+
+            Program.data = tmp;
+
+            ProductionLine newProductionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
+
+            if (oriProdLine.OrderCompletionData.TotalLoss() < newProductionLine.OrderCompletionData.TotalLoss())
             {
-                return true;
+                // Not better
+                Program.data = oriData;
+                return oriProdLine;
             }
 
-            return false;
+            //Better
+            return newProductionLine;
+
         }
 
-        public static int TotalLoss(this Data[] datas)
+        public static int TotalLoss(this CompletionData[] cDatas)
         {
-            return 0;
-        }
+            int loss = 0;
 
-
-
-        public static Data[] GetBestOrder(this Data[] datasByPriority)
-        {
-            Data[] result = datasByPriority;
-
-            for (int i = 0; i < datasByPriority.Length - 1; i++)
+            foreach (var item in cDatas)
             {
-                if(datasByPriority.CheckIfBetterSwapped(i, i + 1))
+                TimeSpan tmp = item.CompletedAt - item.OrderData.dueTime;
+
+                if (tmp > TimeSpan.Zero)
                 {
-                    Data tmp = result[i];
-                    result[i] = result[i + 1];
-                    result[i + 1] = tmp;
+                    loss += (int)Math.Floor(Math.Ceiling(tmp.TotalHours) / 24) * item.OrderData.penaltyForDelay;
                 }
             }
 
-            return result;
+            return loss;
         }
-        
+
+
+
+        public static void GetBestOrder(int[] prodLineCap, ProductionLine oriProdLine)
+        {
+            ProductionLine newProdLine = oriProdLine;
+
+            for (int i = 0; i < Program.data.Length - 1; i++)
+            {
+                newProdLine = CheckIfBetterSwapped(i, i + 1, prodLineCap, newProdLine);
+            }
+        }
     }
 }

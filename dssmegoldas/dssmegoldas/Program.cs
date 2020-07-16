@@ -73,6 +73,14 @@ namespace dssmegoldas
             productionStepDurations = prodStepDur;
 
             ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
+            Methods.GetBestOrder(prodLineCap, productionLine);
+
+            Console.WriteLine("\n\nNew:\n");
+
+            foreach (var item in data)
+            {
+                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
+            }
         }
     }
 }
