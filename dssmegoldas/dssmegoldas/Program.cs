@@ -21,13 +21,13 @@ namespace dssmegoldas
 
         static void Main(string[] args)
         {
-            data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','))).ToArray();
+            data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), new DateTime(2020, 07, 20, 06, 00, 00))).ToArray();
 
             data = data.SortByPriority(new DateTime(2020, 07, 20, 06, 00, 00));
 
             foreach (var item in data)
             {
-                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.CalculatePriority(new DateTime(2020, 07, 20, 06, 00, 00))}");
+                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
             }
 
             int[] prodLineCap = { 6, 2, 3, 1, 4, 3 };
@@ -72,7 +72,7 @@ namespace dssmegoldas
             };
             productionStepDurations = prodStepDur;
 
-            ProductionLine productionLine = new ProductionLine(prodLineCap);
+            ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
         }
     }
 }

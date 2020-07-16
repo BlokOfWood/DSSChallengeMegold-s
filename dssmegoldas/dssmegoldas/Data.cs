@@ -16,7 +16,6 @@ namespace dssmegoldas
         public readonly int penaltyForDelay;
         public readonly double priority;
 
-
         public Data(string[] csvRowSplit, DateTime startDate)
         {
             id = csvRowSplit[0];
