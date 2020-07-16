@@ -14,9 +14,10 @@ namespace dssmegoldas
         public readonly DateTime dueTime;
         public readonly int profit;
         public readonly int penaltyForDelay;
+        public readonly double priority;
 
 
-        public Data(string[] csvRowSplit)
+        public Data(string[] csvRowSplit, DateTime startDate)
         {
             id = csvRowSplit[0];
             product = csvRowSplit[1];
@@ -32,6 +33,8 @@ namespace dssmegoldas
 
             if (!int.TryParse(csvRowSplit[5], out penaltyForDelay))
                 return;
+
+            priority = (dueTime - startDate).TotalMinutes * (1d / penaltyForDelay);
         }
     }
 }
