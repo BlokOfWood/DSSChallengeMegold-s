@@ -46,6 +46,7 @@
     <Compile Include="CSVHelper.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Methods.cs" />
+    <Compile Include="ProductionLine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

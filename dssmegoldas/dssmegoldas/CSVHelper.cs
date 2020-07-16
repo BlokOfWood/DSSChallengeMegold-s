@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace dssmegoldas
 {
-
     class CSVHelper
     {
-        public static void csvifyFile()
+        //Parses the copy pasted google docs table text into a .csv file.
+        public static void csvifyToFile()
         {
             List<string> input = new List<string>();
 
