@@ -81,6 +81,8 @@ namespace dssmegoldas
             {
                 Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
             }
+
+            Console.ReadKey();
         }
     }
 }

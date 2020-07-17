@@ -64,11 +64,12 @@ namespace dssmegoldas
                 TimeStep();
                 // OrderQueue.ToList().ForEach(x => x.ToList().ForEach(y => Console.WriteLine(y.Item1)));
             }
+            Console.WriteLine("------------");
             foreach(CompletionData i in OrderCompletionData)
             {
                 Console.WriteLine(i.CompletedAt);
             }
-            Console.ReadKey();
+            Console.WriteLine("------------");
         }
 
         public bool PickUpNextOrder()
@@ -113,29 +114,21 @@ namespace dssmegoldas
                 IdleOrders[doneOrderStep.Item3].Enqueue(doneOrderStep.Item2);
                 OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 = -1;
             }
-            //if(OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 == -1)
-            //{
-            //    
-            //}
-            //Console.WriteLine($"{doneOrderStep.Item1} - {doneOrderStep.Item2} - {doneOrderStep.Item3} - {doneOrderStep.Item4}");
 
 
             for (int i = 5; i > 0; i--)
             {
-                if (IdleOrders[i - 1].Count == 0) continue;
                 for (int x = 0; x < OrderQueue[i].Length; x++)
                 {
+                    if (IdleOrders[i - 1].Count == 0) continue;
                     if (OrderQueue[i][x].Item2 == -1 || OrderQueue[i][x].Item1.Ticks == 0)
                     {
-                        if (IdleOrders[i - 1].Count > 0)
-                        {
-                            int idleIndex = IdleOrders[i - 1].Dequeue();
-                            OrderQueue[i][x] = (CalculateTimeToFinish(OrderCompletionData[idleIndex], i), idleIndex);
-                        }
+                        int idleIndex = IdleOrders[i - 1].Dequeue();
+                        OrderQueue[i][x] = (CalculateTimeToFinish(OrderCompletionData[idleIndex], i), idleIndex);
                     }
                 }
             }
-            if (nextOrderIndex != OrderCompletionData.Length - 1)
+            if (nextOrderIndex != OrderCompletionData.Length)
             {
                 PickUpNextOrder();
             }

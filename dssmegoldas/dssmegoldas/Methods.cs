@@ -51,7 +51,7 @@ namespace dssmegoldas
                     loss += (int)Math.Floor(Math.Ceiling(tmp.TotalHours) / 24) * item.OrderData.penaltyForDelay;
                 }
             }
-
+            Console.WriteLine(loss);
             return loss;
         }
 
