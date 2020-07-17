@@ -126,6 +126,7 @@ namespace dssmegoldas
 
             Console.ForegroundColor = ConsoleColor.White;
 
+            Output.OrderDataOutput(productionLine.OrderCompletionData);
             Console.ReadKey();
             
         }

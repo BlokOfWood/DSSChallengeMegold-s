@@ -62,14 +62,8 @@ namespace dssmegoldas
             while (OrderCompletionData[OrderCompletionData.Length - 2].CompletedAt.Ticks == 0)
             {
                 TimeStep();
-                // OrderQueue.ToList().ForEach(x => x.ToList().ForEach(y => Console.WriteLine(y.Item1)));
             }
-            /*Console.WriteLine("------------");
-            foreach(CompletionData i in OrderCompletionData)
-            {
-                Console.WriteLine(i.CompletedAt);
-            }
-            Console.WriteLine("------------");*/
+            OrderCompletionData.ToList().ForEach(x => Console.WriteLine(x.CompletedAt));
         }
 
         public bool PickUpNextOrder()
