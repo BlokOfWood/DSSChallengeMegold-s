@@ -23,12 +23,37 @@ namespace dssmegoldas
         {
             data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), new DateTime(2020, 07, 20, 06, 00, 00))).ToArray();
 
-            data = data.SortByPriority(new DateTime(2020, 07, 20, 06, 00, 00));
-
             foreach (var item in data)
             {
-                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
+                Console.WriteLine(item.id);
             }
+
+            /*var lol = data.GroupBy(x => x.dueTime.DayOfYear / 10);
+
+            List<List<Data>> list = new List<List<Data>>();
+
+            foreach (var group in lol)
+            {
+                Console.WriteLine(group.Key);
+                var l = group.OrderByDescending(x => x.penaltyForDelay);
+                foreach (var item in l)
+                {
+                    Console.Write(item.dueTime);
+                    Console.Write("     ");
+
+                    Console.WriteLine(item.penaltyForDelay);
+
+                }
+                list.Add(l.ToList());
+            }
+
+            data = list.SelectMany(x => x).ToArray();
+            */
+            
+            /*foreach (var item in data)
+            {
+                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
+            }*/
 
             int[] prodLineCap = { 6, 2, 3, 1, 4, 3 };
             Dictionary<string, int>[] prodStepDur =
@@ -73,16 +98,36 @@ namespace dssmegoldas
             productionStepDurations = prodStepDur;
 
             ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
-            Methods.GetBestOrder(prodLineCap, productionLine);
 
-            Console.WriteLine("\n\nNew:\n");
+
+            for (int i = 0; i < 30; i++)
+            {
+                productionLine = Methods.GetBestOrder(prodLineCap, productionLine);
+
+            }
+
+            //Console.WriteLine("\n\nNew:\n");
 
             foreach (var item in data)
             {
                 Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
             }
 
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(productionLine.OrderCompletionData.TotalLoss());
+            Console.ForegroundColor = ConsoleColor.White;
+
+            productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(productionLine.OrderCompletionData.TotalLoss());
+
+            Console.WriteLine(data.Sum(x => x.profit * x.quantity));
+
+            Console.ForegroundColor = ConsoleColor.White;
+
             Console.ReadKey();
+            
         }
     }
 }

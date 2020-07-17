@@ -33,7 +33,8 @@ namespace dssmegoldas
             }
 
             //Better
-            Console.WriteLine($"\nBetter ({idx1} - {idx2})\n");
+            //Console.WriteLine($"\nBetter ({idx1} - {idx2})\n");
+            Program.data = oriData;
             return newProductionLine;
 
         }
@@ -51,21 +52,62 @@ namespace dssmegoldas
                     loss += (int)Math.Floor(Math.Ceiling(tmp.TotalHours) / 24) * item.OrderData.penaltyForDelay;
                 }
             }
-            Console.WriteLine(loss);
+            //Console.WriteLine(loss);
             return loss;
         }
 
 
 
-        public static void GetBestOrder(int[] prodLineCap, ProductionLine oriProdLine)
+        public static ProductionLine GetBestOrder(int[] prodLineCap, ProductionLine oriProdLine)
         {
             ProductionLine newProdLine = oriProdLine;
 
 
-            for (int i = 0; i < Program.data.Length - 1; i++)
+            Console.WriteLine("heh");
+
+            for (int i = 0; i < Program.data.Length; i++)
             {
-                newProdLine = CheckIfBetterSwapped(i, i + 1, prodLineCap, newProdLine);
+                while (true)
+                {
+
+                    (int, ProductionLine, int, int) bestSoFarProdLine = (newProdLine.OrderCompletionData.TotalLoss(), newProdLine, 0, 0);
+                    int gotBetter = bestSoFarProdLine.Item1;
+
+                    for (int j = 0; j < Program.data.Length; j++)
+                    {
+                        if (j == i)
+                            continue;
+
+                        ProductionLine tmpProdLine = CheckIfBetterSwapped(i, j, prodLineCap, newProdLine);
+
+                        if (tmpProdLine.OrderCompletionData.TotalLoss() < bestSoFarProdLine.Item1)
+                        {
+                            bestSoFarProdLine.Item1 = tmpProdLine.OrderCompletionData.TotalLoss();
+                            bestSoFarProdLine.Item2 = tmpProdLine;
+                            bestSoFarProdLine.Item3 = i;
+                            bestSoFarProdLine.Item4 = j;
+                        }
+
+                    }
+
+                    // Not better, next
+                    if (bestSoFarProdLine.Item1 == gotBetter)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        newProdLine = bestSoFarProdLine.Item2;
+                        Data tmpDat = Program.data[bestSoFarProdLine.Item3];
+                        Program.data[bestSoFarProdLine.Item3] = Program.data[bestSoFarProdLine.Item4];
+                        Program.data[bestSoFarProdLine.Item4] = tmpDat;
+                    }
+
+                }
             }
+
+            return newProdLine;
+
         }
     }
 }

@@ -64,12 +64,12 @@ namespace dssmegoldas
                 TimeStep();
                 // OrderQueue.ToList().ForEach(x => x.ToList().ForEach(y => Console.WriteLine(y.Item1)));
             }
-            Console.WriteLine("------------");
+            /*Console.WriteLine("------------");
             foreach(CompletionData i in OrderCompletionData)
             {
                 Console.WriteLine(i.CompletedAt);
             }
-            Console.WriteLine("------------");
+            Console.WriteLine("------------");*/
         }
 
         public bool PickUpNextOrder()
