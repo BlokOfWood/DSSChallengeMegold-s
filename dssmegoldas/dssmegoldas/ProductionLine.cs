@@ -59,11 +59,11 @@ namespace dssmegoldas
             {
 
             }
-            while (OrderCompletionData[OrderCompletionData.Length - 2].CompletedAt.Ticks == 0)
+            while (OrderCompletionData.ToList().Exists(x => x.CompletedAt.Ticks == 0))
             {
                 TimeStep();
+                // OrderQueue.ToList().ForEach(x => x.ToList().ForEach(y => Console.WriteLine(y.Item1)));
             }
-            OrderCompletionData.ToList().ForEach(x => Console.WriteLine(x.CompletedAt));
         }
 
         public bool PickUpNextOrder()
@@ -78,8 +78,8 @@ namespace dssmegoldas
                     break;
                 }
             }
-            if(placedOrderInQueue)
-            nextOrderIndex++;
+            if (placedOrderInQueue)
+                nextOrderIndex++;
             return placedOrderInQueue;
         }
 
