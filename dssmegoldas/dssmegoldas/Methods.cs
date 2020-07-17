@@ -17,7 +17,7 @@ namespace dssmegoldas
         {
             Data[] oriData = Program.data;
 
-            Data[] tmp = Program.data;
+            Data[] tmp = (Data[])Program.data.Clone();
             tmp[idx1] = Program.data[idx2];
             tmp[idx2] = Program.data[idx1];
 
@@ -33,6 +33,7 @@ namespace dssmegoldas
             }
 
             //Better
+            Console.WriteLine($"\nBetter ({idx1} - {idx2})\n");
             return newProductionLine;
 
         }
@@ -59,6 +60,7 @@ namespace dssmegoldas
         public static void GetBestOrder(int[] prodLineCap, ProductionLine oriProdLine)
         {
             ProductionLine newProdLine = oriProdLine;
+
 
             for (int i = 0; i < Program.data.Length - 1; i++)
             {
