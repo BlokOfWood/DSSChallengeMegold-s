@@ -59,11 +59,16 @@ namespace dssmegoldas
             {
 
             }
-            while (OrderCompletionData[OrderCompletionData.Length - 1].CompletedAt.Ticks == 0)
+            while (OrderCompletionData[OrderCompletionData.Length - 2].CompletedAt.Ticks == 0)
             {
                 TimeStep();
                 // OrderQueue.ToList().ForEach(x => x.ToList().ForEach(y => Console.WriteLine(y.Item1)));
             }
+            foreach(CompletionData i in OrderCompletionData)
+            {
+                Console.WriteLine(i.CompletedAt);
+            }
+            Console.ReadKey();
         }
 
         public bool PickUpNextOrder()
@@ -117,6 +122,7 @@ namespace dssmegoldas
 
             for (int i = 5; i > 0; i--)
             {
+                if (IdleOrders[i - 1].Count == 0) continue;
                 for (int x = 0; x < OrderQueue[i].Length; x++)
                 {
                     if (OrderQueue[i][x].Item2 == -1 || OrderQueue[i][x].Item1.Ticks == 0)
