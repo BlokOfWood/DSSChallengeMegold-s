@@ -14,7 +14,7 @@ namespace dssmegoldas
 
         public static void StartLogging()
         {
-            fs = new FileStream("logfile.txt", FileMode.Create);
+            fs = new FileStream($"logfile{DateTime.Now:yyyyMMddHHmm}.txt", FileMode.Create);
             sw = new StreamWriter(fs);
 
             string s = $"[{DateTime.Now.ToString()}] Log file created";
