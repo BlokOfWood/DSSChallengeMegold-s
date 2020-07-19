@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="CSVHelper.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="LogSystem.cs" />
     <Compile Include="Methods.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="ProductionLine.cs" />

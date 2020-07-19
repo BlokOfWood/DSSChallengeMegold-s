@@ -74,14 +74,20 @@ namespace dssmegoldas
 
             startTime = new DateTime(2020, 07, 20, 06, 00, 00);
 
-            data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), startTime)).ToArray();
-            data = data.OrderBy(x => x.priority).ToArray();
 
+            string[] lines = File.ReadAllLines("output.csv");
+            data = lines.Select(x => new Data(x.Split(','), startTime)).ToArray();
+            LogSystem.StartLogging(lines, data);
+
+
+            data = data.OrderBy(x => x.priority).ToArray();
             ProductionLine productionLine = new ProductionLine(startTime, prodLineCap);
 
+            LogSystem.SearchStarted();
             Methods.GetBetterOrder(prodLineCap, productionLine);
-            
-            foreach (var item in data)
+            LogSystem.SearchFinished(productionLine.OrderCompletionData.TotalLoss());
+
+            /*foreach (var item in data)
             {
                 Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay}");
             }
@@ -94,7 +100,7 @@ namespace dssmegoldas
             Console.WriteLine(data.Sum(x => x.profit * x.quantity));
 
             Output.OrderDataOutput(productionLine.OrderCompletionData);
-            Output.WorkOrderDataOutput(productionLine.OrderCompletionData);
+            Output.WorkOrderDataOutput(productionLine.OrderCompletionData);*/
             Console.ReadKey();
             
         }
