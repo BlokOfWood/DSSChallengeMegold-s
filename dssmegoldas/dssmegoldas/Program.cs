@@ -81,7 +81,10 @@ namespace dssmegoldas
                 path = args.Aggregate((x, y) => x + y);
                 try
                 {
-                    data = File.ReadAllLines(path).Select(x => new Data(x.Split(','), startTime)).ToArray();
+                    string[] s = File.ReadAllLines(path);
+                    data = s.Select(x => new Data(x.Split(','), startTime)).ToArray();
+                    LogSystem.StartLogging(s, data);
+
                 }
                 catch(FileNotFoundException)
                 {
@@ -98,7 +101,9 @@ namespace dssmegoldas
 
             ProductionLine productionLine = new ProductionLine(startTime, productionLineStepCapacities);
 
+            LogSystem.SearchStarted();
             Methods.GetBetterOrder(productionLineStepCapacities, productionLine);
+            LogSystem.SearchFinished(Methods.TotalLoss(productionLine.OrderCompletionData));
             
             foreach (var item in data)
             {
