@@ -133,11 +133,8 @@ namespace dssmegoldas
                 }
             }
 
+            PickUpNextOrder();
 
-            while (PickUpNextOrder())
-            {
-
-            }
             while (OrderCompletionData.ToList().Exists(x => x.StepCompletedAt[5].Ticks == 0))
             {
                 TimeStep();
@@ -151,6 +148,7 @@ namespace dssmegoldas
         public bool PickUpNextOrder()
         {
             bool placedInQueue = false;
+            //Checks if the first step is free.
             if (OrderQueue[0].Item2 == -1 || OrderQueue[0] == default)
             {
                 OrderQueue[0] = (CalculateTimeToFinish(OrderCompletionData[nextOrderIndex], 1), nextOrderIndex);
@@ -169,28 +167,29 @@ namespace dssmegoldas
         {
             //First two components same as before, third one is the step it was found in.
             (DateTime, int, int) doneOrderStep = (DateTime.MaxValue, -1, -1);
-            //Finds the first 
+            
+            //Finds the next time the line should jump to.
             for (int i = 0; i < 6; i++)
             {
                 if (OrderQueue[i].Item2 != -1 && OrderQueue[i].Item1.Ticks != 0 && doneOrderStep.Item1.Ticks > OrderQueue[i].Item1.Ticks)
                 {
                     doneOrderStep = (OrderQueue[i].Item1, OrderQueue[i].Item2, i);
                 }
-
             }
+
             CurrentTime = doneOrderStep.Item1;
+
             if (doneOrderStep.Item3 == 5)
             {
                 OrderCompletionData[doneOrderStep.Item2].StepCompletedAt[5] = CurrentTime;
                 OrderQueue[doneOrderStep.Item3].Item2 = -1;
             }
-            else if (doneOrderStep.Item2 != -1 && doneOrderStep.Item3 != -1)
+            else
             {
                 OrderCompletionData[doneOrderStep.Item2].StepCompletedAt[doneOrderStep.Item3] = CurrentTime;
                 IdleOrders[doneOrderStep.Item3].Enqueue(doneOrderStep.Item2);
                 OrderQueue[doneOrderStep.Item3].Item2 = -1;
             }
-
 
             for (int i = 5; i > 0; i--)
             {
@@ -206,8 +205,15 @@ namespace dssmegoldas
             {
                 PickUpNextOrder();
             }
+        
         }
 
+        /// <summary>
+        /// Calculates the exact time starting from the current time when the current step of the order will be done.
+        /// </summary>
+        /// <param name="nextOrder">The order that the time should be calculated for.</param>
+        /// <param name="stepInProduction">The step that order is currently at.</param>
+        /// <returns>The time when the specified step for the specified order will be finish.</returns>
         public DateTime CalculateTimeToFinish(CompletionData nextOrder, int stepInProduction)
         {
             TimeSpan timetoCompleteStep = nextOrder.TimeToCompleteSteps[stepInProduction];
@@ -215,7 +221,6 @@ namespace dssmegoldas
 
             DateTime timeOfFinish = CurrentTime + timetoCompleteStep + noShiftTime;
 
-            TimeSpan timeTillNextWorkHour = new TimeSpan(0);
             if (timeOfFinish.Hour > 22 || (timeOfFinish.Hour == 22 && timeOfFinish.Minute > 0) || timeOfFinish.Hour < 6)
             {
                 timeOfFinish += new TimeSpan(08, 00, 00);
