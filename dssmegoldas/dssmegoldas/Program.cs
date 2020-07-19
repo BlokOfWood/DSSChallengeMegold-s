@@ -10,7 +10,7 @@ namespace dssmegoldas
 {
     class Program
     {
-        public static Data[] data;
+        public static List<Data> data = new List<Data>();
         /*
          * An array of product type and production duration pairs.
          * The various elements of the array pertain to the various steps of making the product.
@@ -70,6 +70,8 @@ namespace dssmegoldas
 
         static void Main(string[] args)
         {
+            LogSystem.StartLogging();
+
             string path = "";
             if(args.Length == 0)
             {
@@ -81,9 +83,25 @@ namespace dssmegoldas
                 path = args.Aggregate((x, y) => x + y);
                 try
                 {
+                    Data tmp;
+
                     string[] s = File.ReadAllLines(path);
-                    data = s.Select(x => new Data(x.Split(','), startTime)).ToArray();
-                    LogSystem.StartLogging(s, data);
+                    for (int i = 0; i < s.Length; i++)
+                    {
+                        LogSystem.LogDataInput(s[i]);
+                        tmp = new Data(s[i].Split(','), startTime);
+                        if(tmp.priority == null)
+                        {
+                            LogSystem.LogDataProcess(null);
+                            continue;
+                        }
+                        else
+                        {
+                            LogSystem.LogDataProcess(tmp);
+                            data.Add(tmp);
+                        }
+                    }
+                    data = s.Select(x => new Data(x.Split(','), startTime)).ToList();
 
                 }
                 catch(FileNotFoundException)
@@ -97,25 +115,14 @@ namespace dssmegoldas
                     return;
                 }
             }
-            data = data.OrderBy(x => x.priority).ToArray();
+            data = data.OrderBy(x => x.priority).ToList();
 
             ProductionLine productionLine = new ProductionLine(startTime, productionLineStepCapacities);
 
             LogSystem.SearchStarted();
-            Methods.GetBetterOrder(productionLineStepCapacities, productionLine);
+            productionLine = Methods.GetBetterOrder(productionLineStepCapacities, productionLine);
             LogSystem.SearchFinished(Methods.TotalLoss(productionLine.OrderCompletionData));
-            
-            foreach (var item in data)
-            {
-                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay}");
-            }
 
-            productionLine = new ProductionLine(startTime, productionLineStepCapacities);
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(productionLine.OrderCompletionData.TotalLoss());
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(data.Sum(x => x.profit * x.quantity));
 
             Output.OrderDataOutput(productionLine.OrderCompletionData);
             Output.WorkOrderDataOutput(productionLine.OrderCompletionData);

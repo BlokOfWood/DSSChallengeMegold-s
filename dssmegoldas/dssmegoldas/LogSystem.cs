@@ -9,36 +9,41 @@ namespace dssmegoldas
 {
     public static class LogSystem
     {
-        private static FileStream fs = new FileStream("logfile.txt", FileMode.Create);
-        private static StreamWriter sw = new StreamWriter(fs);
+        private static FileStream fs;
+        private static StreamWriter sw;
 
-        public static void StartLogging(string[] fullCSVLines, Data[] datas)
+        public static void StartLogging()
         {
-            
+            fs = new FileStream("logfile.txt", FileMode.Create);
+            sw = new StreamWriter(fs);
 
             string s = $"[{DateTime.Now.ToString()}] Log file created";
             sw.WriteLine(s);
             Console.WriteLine(s);
 
-            for (int i = 0; i < fullCSVLines.Length; i++)
-            {
-                LogDataInput(fullCSVLines[i]);
-                LogDataProcess(datas[i]);
-            }
-
         }
 
 
-        private static void LogDataInput(string inputString)
+        public static void LogDataInput(string inputString)
         {
             string s = $@"[{DateTime.Now.ToString()}] Input line ""{inputString}"" read and processed as:";
             sw.WriteLine(s);
             Console.WriteLine(s);
         }
 
-        private static void LogDataProcess(Data data)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data">Null if processing is not successful</param>
+        public static void LogDataProcess(Data data)
         {
-            string s = $@"ID: {data.id} - Product Type: {data.product} - Quantity: {data.quantity} - Due time: {data.dueTime} - Profit (/piece): {data.profit} - Penalty For Delay (/day): {data.penaltyForDelay}";
+            string s;
+
+            if (data == null)
+                s = "Constructing Data type from input string failed";
+            else
+                s = $@"ID: {data.id} - Product Type: {data.product} - Quantity: {data.quantity} - Due time: {data.dueTime} - Profit (/piece): {data.profit} - Penalty For Delay (/day): {data.penaltyForDelay}";
+
             sw.WriteLine(s);
             Console.WriteLine(s);
         }
