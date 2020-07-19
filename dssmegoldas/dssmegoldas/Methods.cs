@@ -45,7 +45,7 @@ namespace dssmegoldas
 
             foreach (var item in cDatas)
             {
-                TimeSpan tmp = item.CompletedAt - item.OrderData.dueTime;
+                TimeSpan tmp = item.StepCompletedAt[5] - item.OrderData.dueTime;
 
                 if (tmp > TimeSpan.Zero)
                 {
@@ -61,9 +61,6 @@ namespace dssmegoldas
         public static ProductionLine GetBestOrder(int[] prodLineCap, ProductionLine oriProdLine)
         {
             ProductionLine newProdLine = oriProdLine;
-
-
-            Console.WriteLine("heh");
 
             for (int i = 0; i < Program.data.Length; i++)
             {

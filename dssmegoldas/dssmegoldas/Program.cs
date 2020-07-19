@@ -18,15 +18,11 @@ namespace dssmegoldas
          * duration of the first step of making a "GYB" type product.  
          */
         public static Dictionary<string, int>[] productionStepDurations;
+        public static Dictionary<int, string> stepMachineNames;
 
         static void Main(string[] args)
         {
             data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), new DateTime(2020, 07, 20, 06, 00, 00))).ToArray();
-
-            foreach (var item in data)
-            {
-                Console.WriteLine(item.id);
-            }
 
             /*var lol = data.GroupBy(x => x.dueTime.DayOfYear / 10);
 
@@ -56,7 +52,7 @@ namespace dssmegoldas
             }*/
 
             int[] prodLineCap = { 6, 2, 3, 1, 4, 3 };
-            Dictionary<string, int>[] prodStepDur =
+            productionStepDurations = new Dictionary<string, int>[]
             { 
                 new Dictionary<string, int>
                 {
@@ -95,12 +91,20 @@ namespace dssmegoldas
                     { "SB", 12 }
                 },
             };
-            productionStepDurations = prodStepDur;
+            stepMachineNames = new Dictionary<int, string>
+            {
+                { 0, "Vágó" },
+                { 1, "Hajlító" },
+                { 2, "Hegesztő" },
+                { 3, "Tesztelő" },
+                { 4, "Festő" },
+                { 5, "Csomagoló" }
+            };
 
             ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
 
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 5; i++)
             {
                 productionLine = Methods.GetBestOrder(prodLineCap, productionLine);
 
@@ -127,6 +131,7 @@ namespace dssmegoldas
             Console.ForegroundColor = ConsoleColor.White;
 
             Output.OrderDataOutput(productionLine.OrderCompletionData);
+            Output.WorkOrderDataOutput(productionLine.OrderCompletionData);
             Console.ReadKey();
             
         }

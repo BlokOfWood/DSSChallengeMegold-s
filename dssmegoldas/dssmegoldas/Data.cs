@@ -33,7 +33,7 @@ namespace dssmegoldas
             if (!int.TryParse(csvRowSplit[5], out penaltyForDelay))
                 return;
 
-            priority = 1;
+            priority = (dueTime - startDate).TotalMinutes * 0.0001 + (1d / penaltyForDelay);
         }
     }
 }

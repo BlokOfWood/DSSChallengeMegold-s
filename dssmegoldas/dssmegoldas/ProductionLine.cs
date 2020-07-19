@@ -11,7 +11,9 @@ namespace dssmegoldas
     {
         public Data OrderData;
         public TimeSpan[] TimeToCompleteSteps = new TimeSpan[6];
-        public DateTime CompletedAt;
+        public DateTime[] StepStartedAt = new DateTime[6];
+        public DateTime[] StepCompletedAt = new DateTime[6];
+        public string[] StepDoneOn = new string[6];
 
         public CompletionData(Data orderData)
         {
@@ -24,12 +26,28 @@ namespace dssmegoldas
         }
     }
 
+    public class WorkOrderInstruction
+    {
+        public DateTime instructionDate;
+        public DateTime instructionEnd;
+        public string machineName;
+        public string orderID;
+
+        public WorkOrderInstruction(DateTime _instructionDate, DateTime _instructionEnd, string _machineName, string _orderID)
+        {
+            instructionDate = _instructionDate;
+            instructionEnd = _instructionEnd;
+            machineName = _machineName;
+            orderID = _orderID;
+        }
+    }
+
     public class ProductionLine
     {
         public CompletionData[] OrderCompletionData;
         public DateTime CurrentTime;
         /*
-         * First component: The next step in time.
+         * First component: The time when that step of the order is complete.
          * Second component: The index of the order that the date belongs to.
         */
         public (DateTime, int)[][] OrderQueue = new (DateTime, int)[6][];
@@ -59,28 +77,28 @@ namespace dssmegoldas
             {
 
             }
-            while (OrderCompletionData.ToList().Exists(x => x.CompletedAt.Ticks == 0))
+            while (OrderCompletionData.ToList().Exists(x => x.StepCompletedAt[5].Ticks == 0))
             {
                 TimeStep();
-                // OrderQueue.ToList().ForEach(x => x.ToList().ForEach(y => Console.WriteLine(y.Item1)));
             }
         }
 
         public bool PickUpNextOrder()
         {
-            bool placedOrderInQueue = false;
+            bool placedInQueue = false;
             for (int i = 0; i < OrderQueue[0].Length; i++)
             {
                 if (OrderQueue[0][i].Item2 == -1 || OrderQueue[0][i] == default)
                 {
                     OrderQueue[0][i] = (CalculateTimeToFinish(OrderCompletionData[nextOrderIndex], 1), nextOrderIndex);
-                    placedOrderInQueue = true;
+                    OrderCompletionData[nextOrderIndex].StepStartedAt[0] = CurrentTime;
+                    OrderCompletionData[nextOrderIndex].StepDoneOn[0] = $"{Program.stepMachineNames[0]}-{i + 1}";
+                    nextOrderIndex++;
+                    placedInQueue = true;
                     break;
                 }
             }
-            if (placedOrderInQueue)
-                nextOrderIndex++;
-            return placedOrderInQueue;
+            return placedInQueue;
         }
 
         public void TimeStep()
@@ -100,11 +118,12 @@ namespace dssmegoldas
             CurrentTime = doneOrderStep.Item1;
             if (doneOrderStep.Item3 == 5)
             {
-                OrderCompletionData[doneOrderStep.Item2].CompletedAt = CurrentTime;
+                OrderCompletionData[doneOrderStep.Item2].StepCompletedAt[5] = CurrentTime;
                 OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 = -1;
             }
             else if (doneOrderStep.Item2 != -1 && doneOrderStep.Item3 != -1 && doneOrderStep.Item4 != -1)
             {
+                OrderCompletionData[doneOrderStep.Item2].StepCompletedAt[doneOrderStep.Item3] = CurrentTime;
                 IdleOrders[doneOrderStep.Item3].Enqueue(doneOrderStep.Item2);
                 OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 = -1;
             }
@@ -118,6 +137,8 @@ namespace dssmegoldas
                     if (OrderQueue[i][x].Item2 == -1 || OrderQueue[i][x].Item1.Ticks == 0)
                     {
                         int idleIndex = IdleOrders[i - 1].Dequeue();
+                        OrderCompletionData[idleIndex].StepStartedAt[i] = CurrentTime;
+                        OrderCompletionData[idleIndex].StepDoneOn[i] = $"{Program.stepMachineNames[i]}-{x+1}";
                         OrderQueue[i][x] = (CalculateTimeToFinish(OrderCompletionData[idleIndex], i), idleIndex);
                     }
                 }
@@ -133,7 +154,14 @@ namespace dssmegoldas
             TimeSpan timetoCompleteStep = nextOrder.TimeToCompleteSteps[stepInProduction];
             TimeSpan noShiftTime = TimeSpan.FromHours(8 * ((CurrentTime + timetoCompleteStep).DayOfYear - CurrentTime.DayOfYear));
 
-            return CurrentTime + timetoCompleteStep + noShiftTime;
+            DateTime timeOfFinish = CurrentTime + timetoCompleteStep + noShiftTime;
+
+            TimeSpan timeTillNextWorkHour = new TimeSpan(0);
+            if (timeOfFinish.Hour > 22 || (timeOfFinish.Hour == 22 && timeOfFinish.Minute > 0) || timeOfFinish.Hour < 6)
+            {
+                timeOfFinish += new TimeSpan(08, 00, 00);
+            }
+            return timeOfFinish;
         }
     }
 }
