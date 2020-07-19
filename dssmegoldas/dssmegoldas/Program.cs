@@ -90,10 +90,10 @@ namespace dssmegoldas
                     {
                         LogSystem.LogDataInput(s[i]);
                         tmp = new Data(s[i].Split(','), startTime);
+                        Console.WriteLine(tmp);
                         if(tmp.priority == null)
                         {
                             LogSystem.LogDataProcess(null);
-                            continue;
                         }
                         else
                         {
@@ -101,8 +101,6 @@ namespace dssmegoldas
                             data.Add(tmp);
                         }
                     }
-                    data = s.Select(x => new Data(x.Split(','), startTime)).ToList();
-
                 }
                 catch(FileNotFoundException)
                 {
