@@ -19,9 +19,9 @@ namespace dssmegoldas
                 outputFileContents.Add(
                     $"{i.OrderData.id}," +
                     $"{i.OrderData.quantity * i.OrderData.profit} Ft," +
-                    $"{(int)Math.Ceiling((i.StepCompletedAt[5]-i.OrderData.dueTime).TotalDays)*i.OrderData.penaltyForDelay} Ft," +
-                    $"{i.StepStartedAt:MM.dd.HH:mm}," +
-                    $"{i.StepCompletedAt:MM.dd.HH:mm}," +
+                    $"{Methods.LossFromOrder(i)} Ft," +
+                    $"{i.StepStartedAt[0]:MM.dd.HH:mm}," +
+                    $"{i.StepCompletedAt[5]:MM.dd.HH:mm}," +
                     $"{i.OrderData.dueTime:MM.dd.HH:mm}");
             }
 
