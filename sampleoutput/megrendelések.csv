@@ -1,0 +1,16 @@
+Megrendelésszám,Profit összesen,Levont kötbér,Munka megkezdése,Készre jelentés ideje,Megrendelés és eredeti határideje
+MEGR001,1500000 Ft,1660000 Ft,System.DateTime[],System.DateTime[],07.21.13:00
+MEGR002,4200000 Ft,2200000 Ft,System.DateTime[],System.DateTime[],07.22.08:00
+MEGR003,600000 Ft,180000 Ft,System.DateTime[],System.DateTime[],07.23.14:00
+MEGR004,1200000 Ft,3700000 Ft,System.DateTime[],System.DateTime[],07.30.08:00
+MEGR005,6000000 Ft,760000 Ft,System.DateTime[],System.DateTime[],07.25.16:00
+MEGR006,1080000 Ft,925000 Ft,System.DateTime[],System.DateTime[],07.28.12:00
+MEGR007,8711000 Ft,2030000 Ft,System.DateTime[],System.DateTime[],07.30.14:00
+MEGR008,1302000 Ft,-60000 Ft,System.DateTime[],System.DateTime[],08.05.10:00
+MEGR009,200000 Ft,-1360000 Ft,System.DateTime[],System.DateTime[],08.15.18:00
+MEGR010,191700 Ft,-100000 Ft,System.DateTime[],System.DateTime[],07.26.12:00
+MEGR011,12000000 Ft,1860000 Ft,System.DateTime[],System.DateTime[],07.30.08:00
+MEGR012,6277500 Ft,3420000 Ft,System.DateTime[],System.DateTime[],08.15.10:10
+MEGR013,2575000 Ft,1520000 Ft,System.DateTime[],System.DateTime[],08.01.12:00
+MEGR014,6400000 Ft,1350000 Ft,System.DateTime[],System.DateTime[],07.31.16:00
+MEGR015,3000000 Ft,3600000 Ft,System.DateTime[],System.DateTime[],08.05.12:45
