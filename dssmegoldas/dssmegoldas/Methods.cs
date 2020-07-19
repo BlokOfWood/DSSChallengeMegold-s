@@ -106,7 +106,7 @@ namespace dssmegoldas
                     {
                         break;
                     }
-                    // Spaw gives better result, swap it and check again with same "i"
+                    // Spaw gives better result, swap it and check again with same "i" (different data)
                     else
                     {
                         newProdLine = bestSoFarProdLine.Item2;
