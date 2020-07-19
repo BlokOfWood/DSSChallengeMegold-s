@@ -14,7 +14,7 @@ namespace dssmegoldas
         public readonly DateTime dueTime;
         public readonly int profit;
         public readonly int penaltyForDelay;
-        public readonly double priority;
+        public readonly double? priority;
         
         public Data(string[] csvRowSplit, DateTime startDate)
         {

@@ -11,10 +11,10 @@ namespace dssmegoldas
 
         public static ProductionLine CheckIfBetterSwapped(int idx1, int idx2, int[] prodLineCap, ProductionLine oriProdLine)
         {
-            Data[] oriData = Program.data;
+            List<Data> oriData = Program.data;
 
             // Swap in Program.data
-            Data[] tmp = (Data[])Program.data.Clone();
+            List<Data> tmp = new List<Data>(Program.data);
             tmp[idx1] = Program.data[idx2];
             tmp[idx2] = Program.data[idx1];
 
@@ -73,7 +73,7 @@ namespace dssmegoldas
             ProductionLine newProdLine = firstProdLine;
 
             // Goes trough the full data array
-            for (int i = 0; i < Program.data.Length; i++)
+            for (int i = 0; i < Program.data.Count; i++)
             {
                 while (true)
                 {
@@ -83,7 +83,7 @@ namespace dssmegoldas
                     int shouldBeBetterValue = bestSoFarProdLine.Item1;
 
                     // Swap with a data that gives the lowest loss
-                    for (int j = 0; j < Program.data.Length; j++)
+                    for (int j = 0; j < Program.data.Count; j++)
                     {
                         // No point swapping with itself
                         if (j == i)
