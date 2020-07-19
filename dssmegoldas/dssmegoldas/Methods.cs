@@ -62,63 +62,12 @@ namespace dssmegoldas
             return loss;
         }
 
-        public static void BruteForce(ref int counter, ref ProductionLine bestProdLine, ref int bestLoss, ref List<int> order, int lenght, int[] prodLineCap)
-        {
-            counter++;
-
-            if(counter % 10000 == 0)
-            {
-                foreach (var item in order)
-                {
-                    Console.Write(item + "-");
-                }
-                Console.WriteLine("           " + counter + " - " + bestLoss);
-
-            }
-
-            if (order.Count == lenght)
-            {
-                Data[] progSave = Program.data;
-                Data[] newData = new Data[lenght];
-
-                for (int i = 0; i < lenght; i++)
-                {
-                    newData[i] = Program.data[order[i]];
-                }
-
-                Program.data = newData;
-
-                ProductionLine prodLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
-
-                if(bestLoss > TotalLoss(prodLine.OrderCompletionData))
-                {
-                    bestLoss = TotalLoss(prodLine.OrderCompletionData);
-                    bestProdLine = prodLine;
-                    return;
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-
-            for (int i = 0; i < lenght; i++)
-            {
-                if (!order.Contains(i))
-                {
-                    order.Add(i);
-                    BruteForce(ref counter, ref bestProdLine, ref bestLoss, ref order, lenght, prodLineCap);
-                    order.Remove(i);
-                }
-            }
-
-            return;
-        }
-
-        public static ProductionLine GetBestOrder(int[] prodLineCap, ProductionLine firstProdLine)
+        public static ProductionLine GetBetterOrder(int[] prodLineCap, ProductionLine firstProdLine)
         {
             ProductionLine newProdLine = firstProdLine;
+            newProdLine.OrderCompletionData.OrderByDescending(x => (int)Math.Floor(Math.Ceiling((x.StepCompletedAt[5] - x.OrderData.dueTime).TotalHours) / 24) * x.OrderData.penaltyForDelay);
+            Program.data = newProdLine.OrderCompletionData.ToList().ConvertAll(x => x.OrderData).ToArray();
+            
             int counter = 0;
             for (int i = 0; i < Program.data.Length; i++)
             {
@@ -161,7 +110,6 @@ namespace dssmegoldas
 
                 }
             }
-            Console.WriteLine(counter);
             return newProdLine;
             
         }

@@ -19,15 +19,12 @@ namespace dssmegoldas
          */
         public static Dictionary<string, int>[] productionStepDurations;
         public static Dictionary<int, string> stepMachineNames;
+        public static DateTime startTime;
 
         static void Main(string[] args)
         {
-            data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), new DateTime(2020, 07, 20, 06, 00, 00))).ToArray();
-            data = data.OrderBy(x => x.dueTime).ToArray();
-
             int[] prodLineCap = { 6, 2, 3, 1, 4, 3 };
-            productionStepDurations = new Dictionary<string, int>[]
-            { 
+            productionStepDurations = new Dictionary<string, int>[] {
                 new Dictionary<string, int>
                 {
                     { "GYB", 5 },
@@ -75,33 +72,26 @@ namespace dssmegoldas
                 { 5, "Csomagoló" }
             };
 
-            ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
+            startTime = new DateTime(2020, 07, 20, 06, 00, 00);
 
-            int bestLoss = Methods.TotalLoss(productionLine.OrderCompletionData);
-            List<int> order = new List<int>();
-            int counter = 0;
+            data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), startTime)).ToArray();
+            data = data.OrderBy(x => x.priority).ToArray();
 
-            Methods.BruteForce(ref counter, ref productionLine, ref bestLoss, ref order, 15, prodLineCap);
+            ProductionLine productionLine = new ProductionLine(startTime, prodLineCap);
+
+            Methods.GetBetterOrder(prodLineCap, productionLine);
             
-            //Console.WriteLine("\n\nNew:\n");
-
             foreach (var item in data)
             {
                 Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay}");
             }
 
+            productionLine = new ProductionLine(startTime, prodLineCap);
+
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(productionLine.OrderCompletionData.TotalLoss());
             Console.ForegroundColor = ConsoleColor.White;
-
-            productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(productionLine.OrderCompletionData.TotalLoss());
-
             Console.WriteLine(data.Sum(x => x.profit * x.quantity));
-
-            Console.ForegroundColor = ConsoleColor.White;
 
             Output.OrderDataOutput(productionLine.OrderCompletionData);
             Output.WorkOrderDataOutput(productionLine.OrderCompletionData);

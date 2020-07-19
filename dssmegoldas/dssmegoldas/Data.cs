@@ -14,6 +14,7 @@ namespace dssmegoldas
         public readonly DateTime dueTime;
         public readonly int profit;
         public readonly int penaltyForDelay;
+        public readonly double priority;
         
         public Data(string[] csvRowSplit, DateTime startDate)
         {
@@ -32,6 +33,12 @@ namespace dssmegoldas
             if (!int.TryParse(csvRowSplit[5], out penaltyForDelay))
                 return;
 
+            int timetocompleteperproduct = 0;
+            for(int i = 0; i < 6; i++)
+            {
+                timetocompleteperproduct += Program.productionStepDurations[i][product];
+            }
+            priority = (TimeSpan.FromMinutes(timetocompleteperproduct * quantity) - (dueTime - startDate)).TotalHours - penaltyForDelay / 100;
         }
     }
 }
