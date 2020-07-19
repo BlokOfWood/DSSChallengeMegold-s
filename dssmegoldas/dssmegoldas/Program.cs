@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace dssmegoldas
 {
@@ -17,14 +18,7 @@ namespace dssmegoldas
          * The 0th element's "GYB"th element provides us with the
          * duration of the first step of making a "GYB" type product.  
          */
-        public static Dictionary<string, int>[] productionStepDurations;
-        public static Dictionary<int, string> stepMachineNames;
-        public static DateTime startTime;
-
-        static void Main(string[] args)
-        {
-            int[] prodLineCap = { 6, 2, 3, 1, 4, 3 };
-            productionStepDurations = new Dictionary<string, int>[] {
+        public static Dictionary<string, int>[] productionStepDurations = new Dictionary<string, int>[] {
                 new Dictionary<string, int>
                 {
                     { "GYB", 5 },
@@ -62,7 +56,7 @@ namespace dssmegoldas
                     { "SB", 12 }
                 },
             };
-            stepMachineNames = new Dictionary<int, string>
+        public static Dictionary<int, string> stepMachineNames = new Dictionary<int, string>
             {
                 { 0, "Vágó" },
                 { 1, "Hajlító" },
@@ -71,22 +65,47 @@ namespace dssmegoldas
                 { 4, "Festő" },
                 { 5, "Csomagoló" }
             };
+        public static int[] productionLineStepCapacities = new int[] { 6, 2, 3, 1, 4, 3 };
+        public static DateTime startTime = new DateTime(2020, 07, 20, 06, 00, 00);
 
-            startTime = new DateTime(2020, 07, 20, 06, 00, 00);
-
-            data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), startTime)).ToArray();
+        static void Main(string[] args)
+        {
+            string path = "";
+            if(args.Length == 0)
+            {
+                Console.WriteLine("Nem adott meg utat a bemeneti fájlhoz");
+                return;
+            }
+            else
+            {
+                path = args.Aggregate((x, y) => x + y);
+                try
+                {
+                    data = File.ReadAllLines(path).Select(x => new Data(x.Split(','), startTime)).ToArray();
+                }
+                catch(FileNotFoundException)
+                {
+                    Console.WriteLine("A fájl nem található! \ndssmegoldas.exe [út a fájlhoz]");
+                    return;
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine($"Ismeretlen hiba. {e.Message}");
+                    return;
+                }
+            }
             data = data.OrderBy(x => x.priority).ToArray();
 
-            ProductionLine productionLine = new ProductionLine(startTime, prodLineCap);
+            ProductionLine productionLine = new ProductionLine(startTime, productionLineStepCapacities);
 
-            Methods.GetBetterOrder(prodLineCap, productionLine);
+            Methods.GetBetterOrder(productionLineStepCapacities, productionLine);
             
             foreach (var item in data)
             {
                 Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay}");
             }
 
-            productionLine = new ProductionLine(startTime, prodLineCap);
+            productionLine = new ProductionLine(startTime, productionLineStepCapacities);
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(productionLine.OrderCompletionData.TotalLoss());

@@ -39,39 +39,44 @@ namespace dssmegoldas
             {
                 for(int x = 0; x < 6; x++)
                 {
-                    int differenceInDays = (completionData[i].StepCompletedAt[x] - completionData[i].StepStartedAt[x]).Days;
-                    if (differenceInDays > 0)
+                    for (int z = 0; z < Program.productionLineStepCapacities[x]; z++)
                     {
-                        workOrderData.Add(
-                            new WorkOrderInstruction(
-                            completionData[i].StepStartedAt[x],
-                            new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 22, 00, 00),
-                            completionData[i].StepDoneOn[x],
-                            completionData[i].OrderData.id));
-                        for (int y = 1; y < differenceInDays; y++)
+                        completionData[i].StepDoneOn[x] = Program.stepMachineNames[x] + $"-{z+1}";
+
+                        int differenceInDays = (completionData[i].StepCompletedAt[x] - completionData[i].StepStartedAt[x]).Days;
+                        if (differenceInDays > 0)
                         {
                             workOrderData.Add(
                                 new WorkOrderInstruction(
-                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 06, 00, 00) + TimeSpan.FromDays(y),
-                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 22, 00, 00) + TimeSpan.FromDays(y),
+                                completionData[i].StepStartedAt[x],
+                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 22, 00, 00),
+                                completionData[i].StepDoneOn[x],
+                                completionData[i].OrderData.id));
+                            for (int y = 1; y < differenceInDays; y++)
+                            {
+                                workOrderData.Add(
+                                    new WorkOrderInstruction(
+                                    new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 06, 00, 00) + TimeSpan.FromDays(y),
+                                    new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 22, 00, 00) + TimeSpan.FromDays(y),
+                                    completionData[i].StepDoneOn[x],
+                                    completionData[i].OrderData.id));
+                            }
+                            workOrderData.Add(
+                                new WorkOrderInstruction(
+                                new DateTime(completionData[i].StepCompletedAt[x].Year, completionData[i].StepCompletedAt[x].Month, completionData[i].StepCompletedAt[x].Day, 06, 00, 00),
+                                completionData[i].StepCompletedAt[x],
                                 completionData[i].StepDoneOn[x],
                                 completionData[i].OrderData.id));
                         }
-                        workOrderData.Add(
+                        else
+                        {
+                            workOrderData.Add(
                             new WorkOrderInstruction(
-                            new DateTime(completionData[i].StepCompletedAt[x].Year, completionData[i].StepCompletedAt[x].Month, completionData[i].StepCompletedAt[x].Day, 06, 00, 00),
+                            completionData[i].StepStartedAt[x],
                             completionData[i].StepCompletedAt[x],
                             completionData[i].StepDoneOn[x],
                             completionData[i].OrderData.id));
-                    }
-                    else
-                    {
-                        workOrderData.Add(
-                        new WorkOrderInstruction(
-                        completionData[i].StepStartedAt[x],
-                        completionData[i].StepCompletedAt[x],
-                        completionData[i].StepDoneOn[x],
-                        completionData[i].OrderData.id));
+                        }
                     }
                 }
             }
