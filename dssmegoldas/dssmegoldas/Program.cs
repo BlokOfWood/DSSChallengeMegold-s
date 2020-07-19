@@ -77,8 +77,12 @@ namespace dssmegoldas
 
             ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
 
-            productionLine = Methods.GetBestOrder(prodLineCap, productionLine);
+            int bestLoss = Methods.TotalLoss(productionLine.OrderCompletionData);
+            List<int> order = new List<int>();
+            int counter = 0;
 
+            Methods.BruteForce(ref counter, ref productionLine, ref bestLoss, ref order, 15, prodLineCap);
+            
             //Console.WriteLine("\n\nNew:\n");
 
             foreach (var item in data)
