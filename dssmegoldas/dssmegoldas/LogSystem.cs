@@ -19,6 +19,7 @@ namespace dssmegoldas
 
             string s = $"[{DateTime.Now.ToString()}] Log file created";
             sw.WriteLine(s);
+            sw.Flush();
             Console.WriteLine(s);
 
         }
@@ -28,6 +29,7 @@ namespace dssmegoldas
         {
             string s = $@"[{DateTime.Now.ToString()}] Input line ""{inputString}"" read and processed as:";
             sw.WriteLine(s);
+            sw.Flush();
             Console.WriteLine(s);
         }
 
@@ -45,6 +47,7 @@ namespace dssmegoldas
                 s = $@"ID: {data.id} - Product Type: {data.product} - Quantity: {data.quantity} - Due time: {data.dueTime} - Profit (/piece): {data.profit} - Penalty For Delay (/day): {data.penaltyForDelay}";
 
             sw.WriteLine(s);
+            sw.Flush();
             Console.WriteLine(s);
         }
 
@@ -52,6 +55,7 @@ namespace dssmegoldas
         {
             string s = $"[{DateTime.Now.ToString()}] Searching for low loss started";
             sw.WriteLine(s);
+            sw.Flush();
             Console.WriteLine(s);
         }
 
