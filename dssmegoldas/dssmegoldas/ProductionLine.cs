@@ -7,12 +7,32 @@ using System.Threading.Tasks;
 
 namespace dssmegoldas
 {
+    /// <summary>
+    /// The data structure that holds information about the various details of the completion of an order.
+    /// </summary>
     public class CompletionData
     {
+        //Each array has a length of 6 for each step.
+
+        /// <summary>
+        /// The order the completion details belong to.
+        /// </summary>
         public Data OrderData;
+        /// <summary>
+        /// The array that contains how long each step takes for this order, based on the amount of products and the type of product ordered.
+        /// </summary>
         public TimeSpan[] TimeToCompleteSteps = new TimeSpan[6];
+        /// <summary>
+        /// The time at which the completion of each step started.
+        /// </summary>
         public DateTime[] StepStartedAt = new DateTime[6];
+        /// <summary>
+        /// The time at which each step completed at.
+        /// </summary>
         public DateTime[] StepCompletedAt = new DateTime[6];
+        /// <summary>
+        /// The names of the machines each step was done on.
+        /// </summary>
         public string[] StepDoneOn = new string[6];
 
         public CompletionData(Data orderData)
@@ -21,16 +41,32 @@ namespace dssmegoldas
 
             for (int i = 0; i < 6; i++)
             {
+                //Calculates the time required for completing a step based on the product and the quantity that was ordered.
                 TimeToCompleteSteps[i] = TimeSpan.FromMinutes(Program.productionStepDurations[i][orderData.product] * orderData.quantity);
             }
         }
     }
 
+    /// <summary>
+    /// The data structure that holds the information about each work order that needs to be given.
+    /// </summary>
     public class WorkOrderInstruction
     {
+        /// <summary>
+        /// The date and time of the work order.
+        /// </summary>
         public DateTime instructionDate;
+        /// <summary>
+        /// The time at which the work order will be completed.
+        /// </summary>
         public DateTime instructionEnd;
+        /// <summary>
+        /// The identifier of the machine that the work order was given for.
+        /// </summary>
         public string machineName;
+        /// <summary>
+        /// The ID of the order the machine should work for.
+        /// </summary>
         public string orderID;
 
         public WorkOrderInstruction(DateTime _instructionDate, DateTime _instructionEnd, string _machineName, string _orderID)
@@ -44,16 +80,36 @@ namespace dssmegoldas
 
     public class ProductionLine
     {
+        /// <summary>
+        /// The data for each of the orders expanded into a completion data class, that contains additional info on how and when it was completed.
+        /// </summary>
         public CompletionData[] OrderCompletionData;
+        /// <summary>
+        /// The time at which the production line is currently at.
+        /// </summary>
         public DateTime CurrentTime;
         /*
          * First component: The time when that step of the order is complete.
          * Second component: The index of the order that the date belongs to.
         */
+        /// <summary>
+        /// The array that holds which orders are being worked on, divided into 6 arrays for each step.
+        /// </summary>
         public (DateTime, int)[][] OrderQueue = new (DateTime, int)[6][];
+        /// <summary>
+        /// The orders that are currently not being worked on.
+        /// </summary>
         public Queue<int>[] IdleOrders = new Queue<int>[5];
+        /// <summary>
+        /// The index of the next order that should be passed into the first step of machines.
+        /// </summary>
         int nextOrderIndex = 0;
 
+        /// <summary>
+        /// Creates a new production line object, that calculates the various required data when the constructor is called.
+        /// </summary>
+        /// <param name="startDate">The date from which the production starts.</param>
+        /// <param name="productionLineCapacity">The amount of orders that can be worked on in each step.</param>
         public ProductionLine(DateTime startDate, int[] productionLineCapacity)
         {
             CurrentTime = startDate;
@@ -65,7 +121,12 @@ namespace dssmegoldas
             }
             for (int i = 0; i < 6; i++)
             {
-                OrderQueue[i] = new (DateTime, int)[productionLineCapacity[i]];
+                //Creates the arrays for each step of the machines. 
+                OrderQueue[i] = new (DateTime, int)[1];
+                for(int x = 0; x < OrderCompletionData.Length; x++)
+                {
+                    OrderCompletionData[x].TimeToCompleteSteps[i] = TimeSpan.FromMinutes(OrderCompletionData[x].TimeToCompleteSteps[i].TotalMinutes /productionLineCapacity[i]);
+                }
                 if (i != 5)
                 {
                     IdleOrders[i] = new Queue<int>();

@@ -52,8 +52,8 @@ namespace dssmegoldas
                         {
                             workOrderData.Add(
                                 new WorkOrderInstruction(
-                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 06, 00, 00).AddDays(y),
-                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 22, 00, 00).AddDays(y),
+                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 06, 00, 00) + TimeSpan.FromDays(y),
+                                new DateTime(completionData[i].StepStartedAt[x].Year, completionData[i].StepStartedAt[x].Month, completionData[i].StepStartedAt[x].Day, 22, 00, 00) + TimeSpan.FromDays(y),
                                 completionData[i].StepDoneOn[x],
                                 completionData[i].OrderData.id));
                         }
