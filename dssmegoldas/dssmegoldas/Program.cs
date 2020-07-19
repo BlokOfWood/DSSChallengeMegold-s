@@ -23,33 +23,7 @@ namespace dssmegoldas
         static void Main(string[] args)
         {
             data = File.ReadAllLines("output.csv").Select(x => new Data(x.Split(','), new DateTime(2020, 07, 20, 06, 00, 00))).ToArray();
-
-            /*var lol = data.GroupBy(x => x.dueTime.DayOfYear / 10);
-
-            List<List<Data>> list = new List<List<Data>>();
-
-            foreach (var group in lol)
-            {
-                Console.WriteLine(group.Key);
-                var l = group.OrderByDescending(x => x.penaltyForDelay);
-                foreach (var item in l)
-                {
-                    Console.Write(item.dueTime);
-                    Console.Write("     ");
-
-                    Console.WriteLine(item.penaltyForDelay);
-
-                }
-                list.Add(l.ToList());
-            }
-
-            data = list.SelectMany(x => x).ToArray();
-            */
-            
-            /*foreach (var item in data)
-            {
-                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
-            }*/
+            data = data.OrderBy(x => x.dueTime).ToArray();
 
             int[] prodLineCap = { 6, 2, 3, 1, 4, 3 };
             productionStepDurations = new Dictionary<string, int>[]
@@ -103,18 +77,13 @@ namespace dssmegoldas
 
             ProductionLine productionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
 
-
-            for (int i = 0; i < 5; i++)
-            {
-                productionLine = Methods.GetBestOrder(prodLineCap, productionLine);
-
-            }
+            productionLine = Methods.GetBestOrder(prodLineCap, productionLine);
 
             //Console.WriteLine("\n\nNew:\n");
 
             foreach (var item in data)
             {
-                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay} ----- {item.priority}");
+                Console.WriteLine($"{item.id} - {item.product} - {item.quantity} - {item.dueTime} - {item.profit} - {item.penaltyForDelay}");
             }
 
             Console.ForegroundColor = ConsoleColor.Red;
