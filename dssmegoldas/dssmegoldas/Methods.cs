@@ -67,22 +67,21 @@ namespace dssmegoldas
             ProductionLine newProdLine = firstProdLine;
             newProdLine.OrderCompletionData.OrderByDescending(x => (int)Math.Floor(Math.Ceiling((x.StepCompletedAt[5] - x.OrderData.dueTime).TotalHours) / 24) * x.OrderData.penaltyForDelay);
             Program.data = newProdLine.OrderCompletionData.ToList().ConvertAll(x => x.OrderData).ToArray();
-            
-            int counter = 0;
+
+
             for (int i = 0; i < Program.data.Length; i++)
             {
                 while (true)
                 {
 
                     (int, ProductionLine, int, int) bestSoFarProdLine = (newProdLine.OrderCompletionData.TotalLoss(), newProdLine, 0, 0);
-                    int gotBetter = bestSoFarProdLine.Item1;
+                    int shouldBeBetterValue = bestSoFarProdLine.Item1;
 
                     for (int j = 0; j < Program.data.Length; j++)
                     {
                         if (j == i)
                             continue;
 
-                        counter++;
                         ProductionLine tmpProdLine = CheckIfBetterSwapped(i, j, prodLineCap, newProdLine);
 
                         if (tmpProdLine.OrderCompletionData.TotalLoss() < bestSoFarProdLine.Item1)
@@ -96,10 +95,11 @@ namespace dssmegoldas
                     }
 
                     // Not better, next
-                    if (bestSoFarProdLine.Item1 == gotBetter)
+                    if (bestSoFarProdLine.Item1 == shouldBeBetterValue)
                     {
                         break;
                     }
+                    // Better
                     else
                     {
                         newProdLine = bestSoFarProdLine.Item2;
