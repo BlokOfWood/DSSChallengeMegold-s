@@ -114,8 +114,8 @@ namespace dssmegoldas
         {
             CurrentTime = startDate;
 
-            OrderCompletionData = new CompletionData[Program.data.Length];
-            for (int i = 0; i < Program.data.Length; i++)
+            OrderCompletionData = new CompletionData[Program.data.Count];
+            for (int i = 0; i < Program.data.Count; i++)
             {
                 OrderCompletionData[i] = new CompletionData(Program.data[i]);
             }
