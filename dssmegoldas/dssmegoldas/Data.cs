@@ -26,7 +26,7 @@ namespace dssmegoldas
                 quantity = int.Parse(csvRowSplit[2]);
 
                 string[] tmp = csvRowSplit[3].Split('.');
-                dueTime = new DateTime(2020, int.Parse(tmp[0]), int.Parse(tmp[1]), int.Parse(tmp[2].Split(':')[0]), int.Parse(tmp[2].Split(':')[1]), 00);
+                dueTime = new DateTime(Program.startTime.Year, int.Parse(tmp[0]), int.Parse(tmp[1]), int.Parse(tmp[2].Split(':')[0]), int.Parse(tmp[2].Split(':')[1]), 00);
 
                 profit = int.Parse(csvRowSplit[4]);
 

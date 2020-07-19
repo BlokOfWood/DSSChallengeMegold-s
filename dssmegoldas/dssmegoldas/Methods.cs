@@ -21,7 +21,7 @@ namespace dssmegoldas
             Program.data = tmp;
 
             // Make new production line
-            ProductionLine newProductionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
+            ProductionLine newProductionLine = new ProductionLine(Program.startTime, prodLineCap);
 
             if (oriProdLine.OrderCompletionData.TotalLoss() < newProductionLine.OrderCompletionData.TotalLoss())
             {
