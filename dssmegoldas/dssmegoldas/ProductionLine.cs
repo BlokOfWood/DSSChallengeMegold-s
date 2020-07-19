@@ -93,9 +93,9 @@ namespace dssmegoldas
          * Second component: The index of the order that the date belongs to.
         */
         /// <summary>
-        /// The array that holds which orders are being worked on, divided into 6 arrays for each step.
+        /// The array that holds which orders are being worked on in which step, with the length of 6, a tuple for each step.
         /// </summary>
-        public (DateTime, int)[][] OrderQueue = new (DateTime, int)[6][];
+        public (DateTime, int)[] OrderQueue = new (DateTime, int)[6];
         /// <summary>
         /// The orders that are currently not being worked on.
         /// </summary>
@@ -122,10 +122,10 @@ namespace dssmegoldas
             for (int i = 0; i < 6; i++)
             {
                 //Creates the arrays for each step of the machines. 
-                OrderQueue[i] = new (DateTime, int)[1];
-                for(int x = 0; x < OrderCompletionData.Length; x++)
+                for (int x = 0; x < OrderCompletionData.Length; x++)
                 {
-                    OrderCompletionData[x].TimeToCompleteSteps[i] = TimeSpan.FromMinutes(OrderCompletionData[x].TimeToCompleteSteps[i].TotalMinutes /productionLineCapacity[i]);
+                    //Adjusts the previously calculated numbers according to the number of machines at each step.
+                    OrderCompletionData[x].TimeToCompleteSteps[i] = TimeSpan.FromMinutes(OrderCompletionData[x].TimeToCompleteSteps[i].TotalMinutes / productionLineCapacity[i]);
                 }
                 if (i != 5)
                 {
@@ -144,64 +144,62 @@ namespace dssmegoldas
             }
         }
 
+        /// <summary>
+        /// Places the next order into the first step of machines.
+        /// </summary>
+        /// <returns></returns>
         public bool PickUpNextOrder()
         {
             bool placedInQueue = false;
-            for (int i = 0; i < OrderQueue[0].Length; i++)
+            if (OrderQueue[0].Item2 == -1 || OrderQueue[0] == default)
             {
-                if (OrderQueue[0][i].Item2 == -1 || OrderQueue[0][i] == default)
-                {
-                    OrderQueue[0][i] = (CalculateTimeToFinish(OrderCompletionData[nextOrderIndex], 1), nextOrderIndex);
-                    OrderCompletionData[nextOrderIndex].StepStartedAt[0] = CurrentTime;
-                    OrderCompletionData[nextOrderIndex].StepDoneOn[0] = $"{Program.stepMachineNames[0]}-{i + 1}";
-                    nextOrderIndex++;
-                    placedInQueue = true;
-                    break;
-                }
+                OrderQueue[0] = (CalculateTimeToFinish(OrderCompletionData[nextOrderIndex], 1), nextOrderIndex);
+                OrderCompletionData[nextOrderIndex].StepStartedAt[0] = CurrentTime;
+                nextOrderIndex++;
+                placedInQueue = true;
             }
+
             return placedInQueue;
         }
 
+        /// <summary>
+        /// Steps to the time of the next completion event.
+        /// </summary>
         public void TimeStep()
         {
-            //First two components same as before, third one is the step it was found in, the fourth one is the index of which machine it was inside of in that step.
-            (DateTime, int, int, int) doneOrderStep = (DateTime.MaxValue, -1, -1, -1);
+            //First two components same as before, third one is the step it was found in.
+            (DateTime, int, int) doneOrderStep = (DateTime.MaxValue, -1, -1);
+            //Finds the first 
             for (int i = 0; i < 6; i++)
             {
-                for (int x = 0; x < OrderQueue[i].Length; x++)
+                if (OrderQueue[i].Item2 != -1 && OrderQueue[i].Item1.Ticks != 0 && doneOrderStep.Item1.Ticks > OrderQueue[i].Item1.Ticks)
                 {
-                    if (OrderQueue[i][x].Item2 != -1 && OrderQueue[i][x].Item1.Ticks != 0 && doneOrderStep.Item1.Ticks > OrderQueue[i][x].Item1.Ticks)
-                    {
-                        doneOrderStep = (OrderQueue[i][x].Item1, OrderQueue[i][x].Item2, i, x);
-                    }
+                    doneOrderStep = (OrderQueue[i].Item1, OrderQueue[i].Item2, i);
                 }
+
             }
             CurrentTime = doneOrderStep.Item1;
             if (doneOrderStep.Item3 == 5)
             {
                 OrderCompletionData[doneOrderStep.Item2].StepCompletedAt[5] = CurrentTime;
-                OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 = -1;
+                OrderQueue[doneOrderStep.Item3].Item2 = -1;
             }
-            else if (doneOrderStep.Item2 != -1 && doneOrderStep.Item3 != -1 && doneOrderStep.Item4 != -1)
+            else if (doneOrderStep.Item2 != -1 && doneOrderStep.Item3 != -1)
             {
                 OrderCompletionData[doneOrderStep.Item2].StepCompletedAt[doneOrderStep.Item3] = CurrentTime;
                 IdleOrders[doneOrderStep.Item3].Enqueue(doneOrderStep.Item2);
-                OrderQueue[doneOrderStep.Item3][doneOrderStep.Item4].Item2 = -1;
+                OrderQueue[doneOrderStep.Item3].Item2 = -1;
             }
 
 
             for (int i = 5; i > 0; i--)
             {
-                for (int x = 0; x < OrderQueue[i].Length; x++)
+                if (IdleOrders[i - 1].Count == 0) continue;
+                if (OrderQueue[i].Item2 == -1 || OrderQueue[i].Item1.Ticks == 0)
                 {
-                    if (IdleOrders[i - 1].Count == 0) continue;
-                    if (OrderQueue[i][x].Item2 == -1 || OrderQueue[i][x].Item1.Ticks == 0)
-                    {
-                        int idleIndex = IdleOrders[i - 1].Dequeue();
-                        OrderCompletionData[idleIndex].StepStartedAt[i] = CurrentTime;
-                        OrderCompletionData[idleIndex].StepDoneOn[i] = $"{Program.stepMachineNames[i]}-{x+1}";
-                        OrderQueue[i][x] = (CalculateTimeToFinish(OrderCompletionData[idleIndex], i), idleIndex);
-                    }
+                    int idleIndex = IdleOrders[i - 1].Dequeue();
+                    OrderCompletionData[idleIndex].StepStartedAt[i] = CurrentTime;
+                    OrderQueue[i] = (CalculateTimeToFinish(OrderCompletionData[idleIndex], i), idleIndex);
                 }
             }
             if (nextOrderIndex != OrderCompletionData.Length)
