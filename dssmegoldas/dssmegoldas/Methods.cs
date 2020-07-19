@@ -13,23 +13,26 @@ namespace dssmegoldas
         {
             Data[] oriData = Program.data;
 
+            // Swap in Program.data
             Data[] tmp = (Data[])Program.data.Clone();
             tmp[idx1] = Program.data[idx2];
             tmp[idx2] = Program.data[idx1];
 
             Program.data = tmp;
 
+            // Make new production line
             ProductionLine newProductionLine = new ProductionLine(new DateTime(2020, 07, 20, 06, 00, 00), prodLineCap);
 
             if (oriProdLine.OrderCompletionData.TotalLoss() < newProductionLine.OrderCompletionData.TotalLoss())
             {
                 // Not better
+                // Restore Program.data
                 Program.data = oriData;
                 return oriProdLine;
             }
 
-            //Better
-            //Console.WriteLine($"\nBetter ({idx1} - {idx2})\n");
+            // Better
+            // Restore Program.data
             Program.data = oriData;
             return newProductionLine;
 
@@ -41,10 +44,10 @@ namespace dssmegoldas
 
             foreach (var item in cDatas)
             {
+                // Add each order's loss
                 loss += LossFromOrder(item);
             }
 
-            //Console.WriteLine(loss);
             return loss;
         }
 
@@ -52,11 +55,14 @@ namespace dssmegoldas
         {
             int loss = 0;
 
+            // Calculate the time from due time to completion time
             TimeSpan tmp = completionData.StepCompletedAt[5] - completionData.OrderData.dueTime;
             
+            // If it's less than zero, it completed in time
             if (tmp > TimeSpan.Zero)
             {
-                loss += (int)Math.Floor(Math.Ceiling(tmp.TotalHours) / 24) * completionData.OrderData.penaltyForDelay;
+                // Lost for every started 24 hours
+                loss += (int)(Math.Ceiling(tmp.TotalHours) / 24) * completionData.OrderData.penaltyForDelay;
             }
 
             return loss;
@@ -65,20 +71,21 @@ namespace dssmegoldas
         public static ProductionLine GetBetterOrder(int[] prodLineCap, ProductionLine firstProdLine)
         {
             ProductionLine newProdLine = firstProdLine;
-            newProdLine.OrderCompletionData.OrderByDescending(x => (int)Math.Floor(Math.Ceiling((x.StepCompletedAt[5] - x.OrderData.dueTime).TotalHours) / 24) * x.OrderData.penaltyForDelay);
-            Program.data = newProdLine.OrderCompletionData.ToList().ConvertAll(x => x.OrderData).ToArray();
 
-
+            // Goes trough the full data array
             for (int i = 0; i < Program.data.Length; i++)
             {
                 while (true)
                 {
-
+                    // Reset the best so far value to current
+                    // First int is loss, last 2 int is "i" and "j"
                     (int, ProductionLine, int, int) bestSoFarProdLine = (newProdLine.OrderCompletionData.TotalLoss(), newProdLine, 0, 0);
                     int shouldBeBetterValue = bestSoFarProdLine.Item1;
 
+                    // Swap with a data that gives the lowest loss
                     for (int j = 0; j < Program.data.Length; j++)
                     {
+                        // No point swapping with itself
                         if (j == i)
                             continue;
 
@@ -94,12 +101,12 @@ namespace dssmegoldas
 
                     }
 
-                    // Not better, next
+                    // Swap doesn't give better result, move on to next "i"
                     if (bestSoFarProdLine.Item1 == shouldBeBetterValue)
                     {
                         break;
                     }
-                    // Better
+                    // Spaw gives better result, swap it and check again with same "i"
                     else
                     {
                         newProdLine = bestSoFarProdLine.Item2;
@@ -110,8 +117,8 @@ namespace dssmegoldas
 
                 }
             }
+
             return newProdLine;
-            
         }
     }
 }
